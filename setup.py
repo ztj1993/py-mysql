@@ -18,13 +18,13 @@ version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
 f.close()
 
 setup(
-    name='py-ztj-mysql-instance',
+    name='py-ztj-mysql',
     version=version,
     description='python mysql instance package',
     long_description=readme,
     long_description_content_type='text/markdown',
-    py_modules=['mysql_instance'],
-    url='http://github.com/ztj1993/PythonPackages/blob/master/py_mysql_instance',
+    py_modules=['ZtjMySQL'],
+    url='https://github.com/ztj-package/py-mysql-instance',
     author='ZhangTianJie',
     author_email='ztj1993@gmail.com',
     keywords='mysql',

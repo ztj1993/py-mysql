@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Intro: MySQL 实例模块
+# Intro: MySQL实例模块
 # Author: Ztj
 # Email: ztj1993@gmail.com
-# Version: 0.0.2
+# Version: 0.0.3
 # Date: 2020-09-08
 
 import os
@@ -10,11 +10,11 @@ import time
 
 import pymysql
 from DBUtils.PooledDB import PooledDB
+from ZtjRegistry import Registry
 from pymysql.connections import Connection
 from pymysql.cursors import DictCursor
-from registry import Registry
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 
 class MySQL(object):
@@ -26,6 +26,7 @@ class MySQL(object):
         self.state = kwargs.get('state', True)
 
         self.options.default('host', os.environ.get('MYSQL_HOST', '127.0.0.1'))
+        self.options.default('port', int(os.environ.get('MYSQL_PORT', 3306)))
         self.options.default('user', os.environ.get('MYSQL_USER', 'root'))
         self.options.default('password', os.environ.get('MYSQL_PASSWORD', ''))
         self.options.default('charset', os.environ.get('MYSQL_CHARSET', 'utf8'))
@@ -81,16 +82,25 @@ class MySQL(object):
                     cursor.execute(*sql)
             connection.commit()
 
-    def get_record(self, sql, callback):
+    def get_record(self, sql, callback, *args, **kwargs):
         connection = self.get_server()
         with connection.cursor() as cursor:
             if isinstance(sql, str):
                 cursor.execute(sql)
             else:
                 cursor.execute(*sql)
-            result = callback(cursor)
+            result = callback(cursor, *args, **kwargs)
         return result
 
     @staticmethod
-    def record_callback_fetchall(cursor):
+    def record_callback_fetch_all(cursor: DictCursor):
         return cursor.fetchall()
+
+    @staticmethod
+    def record_callback_fetch_one(cursor: DictCursor):
+        return cursor.fetchone()
+
+    @staticmethod
+    def record_callback_fetch_value(cursor: DictCursor, field=None):
+        row = cursor.fetchone()
+        return list(row.values())[0] if field is None else row.get(field)
