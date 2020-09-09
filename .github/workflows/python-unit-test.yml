@@ -39,3 +39,6 @@ jobs:
       - name: Run unit test
         run: |
           python tests.py
+      - name: Run setup test
+        run: |
+          python setup.py install
