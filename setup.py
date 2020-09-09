@@ -13,7 +13,7 @@ f = open(os.path.join(os.path.dirname(__file__), 'README.md'), encoding='utf8')
 readme = f.read()
 f.close()
 
-f = open(os.path.join(os.path.dirname(__file__), 'mysql_instance.py'), encoding='utf8')
+f = open(os.path.join(os.path.dirname(__file__), 'ZtjMySQL.py'), encoding='utf8')
 version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
 f.close()
 
@@ -24,10 +24,14 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     py_modules=['ZtjMySQL'],
-    url='https://github.com/ztj-package/py-mysql-instance',
+    url='https://github.com/ztj-package/py-mysql',
     author='ZhangTianJie',
     author_email='ztj1993@gmail.com',
     keywords='mysql',
-    install_requires=['pymysql', 'DBUtils', 'py-ztj-registry'],
+    install_requires=[
+        'pymysql',
+        'DBUtils',
+        'py-ztj-registry>=0.0.4',
+    ],
     license='MIT License',
 )
