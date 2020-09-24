@@ -3,6 +3,7 @@
 # Author: Ztj
 # Email: ztj1993@gmail.com
 
+import os
 import unittest
 
 from ZtjMySQL import MySQL
@@ -47,6 +48,25 @@ class TestMySQL(unittest.TestCase):
         """测试初始化"""
         mysql = MySQL()
         self.assertTrue(mysql.ping())
+
+    def test_environment_options(self):
+        os.environ['ENV_PREFIX_MYSQL'] = 'TEST'
+        os.environ['TEST_HOST'] = '127.0.0.1'
+        os.environ['TEST_PORT'] = '3306'
+        os.environ['TEST_USER'] = 'root'
+        os.environ['TEST_PASSWORD'] = ''
+        os.environ['TEST_CHARSET'] = 'utf8'
+        mysql = MySQL()
+        self.assertDictEqual(
+            mysql.options(),
+            dict(
+                host='127.0.0.1',
+                port=3306,
+                user='root',
+                password='',
+                charset='utf8',
+            ),
+        )
 
     def test_wait(self):
         """测试等待"""
