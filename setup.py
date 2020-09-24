@@ -23,7 +23,7 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     py_modules=['ZtjMySQL'],
-    url='https://github.com/ztj-package/py-mysql',
+    url='https://github.com/ztj1993/py-mysql',
     author='ZhangTianJie',
     author_email='ztj1993@gmail.com',
     keywords='mysql',

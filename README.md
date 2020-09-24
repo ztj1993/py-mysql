@@ -4,7 +4,7 @@
 这是一个 MySQL 实例模块，可以提供 MySQL 的快速使用。
 
 ### 链接
-- [GitHub](https://github.com/ztj-package/py-mysql)
+- [GitHub](https://github.com/ztj1993/py-mysql)
 - [PyPI](https://pypi.org/project/py-ztj-mysql)
 
 ### 安装
