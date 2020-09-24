@@ -23,7 +23,7 @@ class MySQL(object):
         self.options = Registry(kwargs.get('options', {}))
         self.pool = None
         self.server = None
-        self.state = kwargs.get('state', True)
+        self.state = None
 
         self.options.default('host', os.environ.get('MYSQL_HOST', '127.0.0.1'))
         self.options.default('port', int(os.environ.get('MYSQL_PORT', 3306)))
@@ -39,16 +39,19 @@ class MySQL(object):
             self.pool = PooledDB(creator=pymysql, cursorclass=DictCursor, **self.options.get())
         return self.pool
 
-    def reconnect(self):
+    def destroy(self):
         self.pool = None
-        self.server = self.get_pool().connection()
+        self.server = None
 
     def connection(self) -> Connection:
-        return self.get_pool().connection()
+        self.state = False
+        connection = self.get_pool().connection()
+        self.state = True
+        return connection
 
     def get_server(self) -> Connection:
         if self.server is None:
-            self.server = self.get_pool().connection()
+            self.server = self.connection()
         return self.server
 
     def ping(self) -> bool:
