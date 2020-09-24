@@ -19,8 +19,8 @@ __version__ = '0.0.3'
 class MySQL(object):
 
     def __init__(self, **kwargs):
-        self.pool = None
-        self.server = None
+        self._pool = None
+        self._connection = None
 
         self.options = dict()
         self.options['host'] = kwargs.get('host', os.environ.get('MYSQL_HOST', '127.0.0.1'))
@@ -29,36 +29,36 @@ class MySQL(object):
         self.options['password'] = kwargs.get('password', os.environ.get('MYSQL_PASSWORD', ''))
         self.options['charset'] = kwargs.get('charset', os.environ.get('MYSQL_CHARSET', 'utf8'))
 
-    def get_pool(self) -> PooledDB:
-        if self.pool is None:
-            self.pool = PooledDB(creator=pymysql, cursorclass=DictCursor, **self.options)
-        return self.pool
+    def pool(self) -> PooledDB:
+        if self._pool is None:
+            self._pool = PooledDB(creator=pymysql, cursorclass=DictCursor, **self.options)
+        return self._pool
 
     def destroy(self):
-        self.pool = None
-        self.server = None
+        self._pool = None
+        self._connection = None
+
+    def reconnection(self) -> Connection:
+        return self.pool().connection()
 
     def connection(self) -> Connection:
-        return self.get_pool().connection()
-
-    def get_server(self) -> Connection:
-        if self.server is None:
-            self.server = self.connection()
-        return self.server
+        if self._connection is None:
+            self._connection = self.reconnection()
+        return self._connection
 
     def ping(self) -> bool:
         try:
-            self.get_server().ping()
+            self.connection().ping()
             return True
         except:
             return False
 
-    def wait(self, interval_time=60):
+    def wait(self, interval=60):
         while self.ping() is False:
-            time.sleep(interval_time)
+            time.sleep(interval)
 
     def exec_sql(self, sql):
-        connection = self.get_server()
+        connection = self.connection()
         with connection.cursor() as cursor:
             if isinstance(sql, str):
                 cursor.execute(sql)
@@ -67,7 +67,7 @@ class MySQL(object):
             connection.commit()
 
     def exec_sql_list(self, sql_list):
-        connection = self.get_server()
+        connection = self.connection()
         with connection.cursor() as cursor:
             for sql in sql_list:
                 if isinstance(sql, str):
@@ -77,7 +77,7 @@ class MySQL(object):
             connection.commit()
 
     def get_record(self, sql, callback, *args, **kwargs):
-        connection = self.get_server()
+        connection = self.connection()
         with connection.cursor() as cursor:
             if isinstance(sql, str):
                 cursor.execute(sql)
