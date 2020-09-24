@@ -21,7 +21,6 @@ class MySQL(object):
     def __init__(self, **kwargs):
         self.pool = None
         self.server = None
-        self.state = None
 
         self.options = dict()
         self.options['host'] = kwargs.get('host', os.environ.get('MYSQL_HOST', '127.0.0.1'))
@@ -40,10 +39,7 @@ class MySQL(object):
         self.server = None
 
     def connection(self) -> Connection:
-        self.state = False
-        connection = self.get_pool().connection()
-        self.state = True
-        return connection
+        return self.get_pool().connection()
 
     def get_server(self) -> Connection:
         if self.server is None:
@@ -53,10 +49,9 @@ class MySQL(object):
     def ping(self) -> bool:
         try:
             self.get_server().ping()
-            self.state = True
+            return True
         except:
-            self.state = False
-        return self.state
+            return False
 
     def wait(self, interval_time=60):
         while self.ping() is False:
