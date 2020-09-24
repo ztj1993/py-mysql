@@ -18,20 +18,31 @@ __version__ = '0.0.3'
 
 class MySQL(object):
 
-    def __init__(self, **kwargs):
+    def __init__(self, options=None):
         self._pool = None
         self._connection = None
+        self._options = options if isinstance(options, dict) else dict()
 
-        self.options = dict()
-        self.options['host'] = kwargs.get('host', os.environ.get('MYSQL_HOST', '127.0.0.1'))
-        self.options['port'] = kwargs.get('port', os.environ.get('MYSQL_PORT', 3306))
-        self.options['user'] = kwargs.get('user', os.environ.get('MYSQL_USER', 'root'))
-        self.options['password'] = kwargs.get('password', os.environ.get('MYSQL_PASSWORD', ''))
-        self.options['charset'] = kwargs.get('charset', os.environ.get('MYSQL_CHARSET', 'utf8'))
+    def environment(self):
+        prefix = os.environ.get('ENV_PREFIX_MYSQL', 'MYSQL')
+        prefix = prefix if prefix.endswith('_') else prefix + '_'
+        for key, value in os.environ.items():
+            if not key.startswith(prefix):
+                continue
+            self._options[key[len(prefix):].lower()] = value
+
+    def options(self):
+        options = dict()
+        options['host'] = self._options.get('host', '127.0.0.1')
+        options['port'] = int(self._options.get('port', 3306))
+        options['user'] = self._options.get('user', 'root')
+        options['password'] = self._options.get('password', '')
+        options['charset'] = self._options.get('charset', 'utf8')
+        return options
 
     def pool(self) -> PooledDB:
         if self._pool is None:
-            self._pool = PooledDB(creator=pymysql, cursorclass=DictCursor, **self.options)
+            self._pool = PooledDB(creator=pymysql, cursorclass=DictCursor, **self.options())
         return self._pool
 
     def destroy(self):
