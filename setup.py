@@ -31,7 +31,6 @@ setup(
     install_requires=[
         'pymysql',
         'DBUtils',
-        'py-ztj-registry>=0.0.4',
     ],
     license='MIT License',
 )

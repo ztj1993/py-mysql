@@ -10,7 +10,6 @@ import time
 
 import pymysql
 from DBUtils.PooledDB import PooledDB
-from ZtjRegistry import Registry
 from pymysql.connections import Connection
 from pymysql.cursors import DictCursor
 
@@ -20,23 +19,20 @@ __version__ = '0.0.3'
 class MySQL(object):
 
     def __init__(self, **kwargs):
-        self.options = Registry(kwargs.get('options', {}))
         self.pool = None
         self.server = None
         self.state = None
 
-        self.options.default('host', os.environ.get('MYSQL_HOST', '127.0.0.1'))
-        self.options.default('port', int(os.environ.get('MYSQL_PORT', 3306)))
-        self.options.default('user', os.environ.get('MYSQL_USER', 'root'))
-        self.options.default('password', os.environ.get('MYSQL_PASSWORD', ''))
-        self.options.default('charset', os.environ.get('MYSQL_CHARSET', 'utf8'))
-
-    def set_option(self, key, value):
-        self.options.set(key, value)
+        self.options = dict()
+        self.options['host'] = kwargs.get('host', os.environ.get('MYSQL_HOST', '127.0.0.1'))
+        self.options['port'] = kwargs.get('port', os.environ.get('MYSQL_PORT', 3306))
+        self.options['user'] = kwargs.get('user', os.environ.get('MYSQL_USER', 'root'))
+        self.options['password'] = kwargs.get('password', os.environ.get('MYSQL_PASSWORD', ''))
+        self.options['charset'] = kwargs.get('charset', os.environ.get('MYSQL_CHARSET', 'utf8'))
 
     def get_pool(self) -> PooledDB:
         if self.pool is None:
-            self.pool = PooledDB(creator=pymysql, cursorclass=DictCursor, **self.options.get())
+            self.pool = PooledDB(creator=pymysql, cursorclass=DictCursor, **self.options)
         return self.pool
 
     def destroy(self):
