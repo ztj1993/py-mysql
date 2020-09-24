@@ -53,9 +53,14 @@ class MySQL(object):
         except:
             return False
 
-    def wait(self, interval=60):
-        while self.ping() is False:
+    def wait(self, interval=60, retry=100, callback=None):
+        for i in range(retry):
+            if self.ping():
+                return True
+            if callback is not None:
+                callback(i, interval, self)
             time.sleep(interval)
+        return False
 
     def exec_sql(self, sql):
         connection = self.connection()

@@ -48,6 +48,20 @@ class TestMySQL(unittest.TestCase):
         mysql = MySQL()
         self.assertTrue(mysql.ping())
 
+    def test_wait(self):
+        """测试等待"""
+        global retry
+        retry = 0
+
+        def retry_callback(index, interval, cls):
+            global retry
+            self.assertEqual(retry, index)
+            retry += 1
+
+        mysql = MySQL()
+        mysql.connection().close()
+        mysql.wait(interval=0.1, retry=5, callback=retry_callback)
+
     def test_record(self):
         """测试设置配置项"""
         mysql = MySQL()
