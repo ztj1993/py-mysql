@@ -2,8 +2,8 @@
 # Intro: MySQL实例模块
 # Author: Ztj
 # Email: ztj1993@gmail.com
-# Version: 0.0.3
-# Date: 2020-09-08
+# Version: 1.0.0
+# Date: 2020-09-24
 
 import os
 import time
@@ -13,7 +13,7 @@ from DBUtils.PooledDB import PooledDB
 from pymysql.connections import Connection
 from pymysql.cursors import DictCursor
 
-__version__ = '0.0.3'
+__version__ = '1.0.0'
 
 
 class MySQL(object):
