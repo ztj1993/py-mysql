@@ -32,6 +32,17 @@ __SELECT_LIST__ = [
 
 class TestMySQL(unittest.TestCase):
 
+    def test_connection_destroy(self):
+        """测试初始化"""
+        mysql = MySQL()
+        connection1 = mysql.connection()
+        connection2 = mysql.connection()
+        self.assertEqual(connection1, connection2)
+        mysql.destroy()
+        connection3 = mysql.connection()
+        self.assertEqual(connection1, connection2)
+        self.assertNotEqual(connection1, connection3)
+
     def test_ping(self):
         """测试初始化"""
         mysql = MySQL()
