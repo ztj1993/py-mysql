@@ -3,7 +3,6 @@
 # Author: Ztj
 # Email: ztj1993@gmail.com
 
-import os
 import unittest
 
 from ZtjMySQL import MySQL
@@ -35,7 +34,7 @@ class TestMySQL(unittest.TestCase):
 
     def test_connection_destroy(self):
         """测试初始化"""
-        mysql = MySQL()
+        mysql = MySQL(host='127.0.0.1', user='root')
         connection1 = mysql.connection()
         connection2 = mysql.connection()
         self.assertEqual(connection1, connection2)
@@ -46,45 +45,12 @@ class TestMySQL(unittest.TestCase):
 
     def test_ping(self):
         """测试初始化"""
-        mysql = MySQL()
+        mysql = MySQL(host='127.0.0.1', user='root')
         self.assertTrue(mysql.ping())
-
-    def test_environment_options(self):
-        os.environ['ENV_PREFIX_MYSQL'] = 'TEST'
-        os.environ['TEST_HOST'] = '127.0.0.1'
-        os.environ['TEST_PORT'] = '3306'
-        os.environ['TEST_USER'] = 'root'
-        os.environ['TEST_PASSWORD'] = ''
-        os.environ['TEST_CHARSET'] = 'utf8'
-        mysql = MySQL()
-        self.assertDictEqual(
-            mysql.options(),
-            dict(
-                host='127.0.0.1',
-                port=3306,
-                user='root',
-                password='',
-                charset='utf8',
-            ),
-        )
-
-    def test_wait(self):
-        """测试等待"""
-        global retry
-        retry = 0
-
-        def retry_callback(index, interval, cls):
-            global retry
-            self.assertEqual(retry, index)
-            retry += 1
-
-        mysql = MySQL()
-        mysql.connection().close()
-        mysql.wait(interval=0.1, retry=5, callback=retry_callback)
 
     def test_record(self):
         """测试设置配置项"""
-        mysql = MySQL()
+        mysql = MySQL(host='127.0.0.1', user='root')
         mysql.exec_sql(__DROP_DATABASE__)
         mysql.exec_sql(__CREATE_DATABASE__)
         mysql.exec_sql(__CREATE_TABLE__)

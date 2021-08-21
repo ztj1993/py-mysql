@@ -17,3 +17,11 @@ pip install py-ztj-mysql
 pip install pymysql>=0.9.3
 pip install DBUtils>=1.3
 ```
+
+## 使用
+```
+from ZtjMySQL import MySQL
+
+mysql = MySQL(host='localhost', user='root')
+print(mysql.ping())
+```
