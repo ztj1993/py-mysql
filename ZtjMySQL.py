@@ -1,48 +1,23 @@
 # -*- coding: utf-8 -*-
-# Intro: MySQL实例模块
 # Author: Ztj
 # Email: ztj1993@gmail.com
-# Version: 1.0.0
-# Date: 2020-09-24
-
-import os
-import time
 
 import pymysql
-from DBUtils.PooledDB import PooledDB
+from dbutils.pooled_db import PooledDB
 from pymysql.connections import Connection
 from pymysql.cursors import DictCursor
-
-__version__ = '1.0.0'
 
 
 class MySQL(object):
 
-    def __init__(self, options=None):
+    def __init__(self, **kwargs):
         self._pool = None
         self._connection = None
-        self._options = options if isinstance(options, dict) else dict()
-
-    def environment(self):
-        prefix = os.environ.get('ENV_PREFIX_MYSQL', 'MYSQL')
-        prefix = prefix if prefix.endswith('_') else prefix + '_'
-        for key, value in os.environ.items():
-            if not key.startswith(prefix):
-                continue
-            self._options[key[len(prefix):].lower()] = value
-
-    def options(self):
-        options = dict()
-        options['host'] = self._options.get('host', '127.0.0.1')
-        options['port'] = int(self._options.get('port', 3306))
-        options['user'] = self._options.get('user', 'root')
-        options['password'] = self._options.get('password', '')
-        options['charset'] = self._options.get('charset', 'utf8')
-        return options
+        self.options = kwargs
 
     def pool(self) -> PooledDB:
         if self._pool is None:
-            self._pool = PooledDB(creator=pymysql, cursorclass=DictCursor, **self.options())
+            self._pool = PooledDB(creator=pymysql, cursorclass=DictCursor, **self.options)
         return self._pool
 
     def destroy(self):
@@ -63,15 +38,6 @@ class MySQL(object):
             return True
         except:
             return False
-
-    def wait(self, interval=60, retry=100, callback=None):
-        for i in range(retry):
-            if self.ping():
-                return True
-            if callback is not None:
-                callback(i, interval, self)
-            time.sleep(interval)
-        return False
 
     def exec_sql(self, sql):
         connection = self.connection()

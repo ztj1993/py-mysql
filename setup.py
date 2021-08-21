@@ -3,22 +3,16 @@
 # Author: Ztj
 # Email: ztj1993@gmail.com
 
-import os.path
-import re
+import pathlib
 
 from setuptools import setup
 
-f = open(os.path.join(os.path.dirname(__file__), 'README.md'), encoding='utf8')
-readme = f.read()
-f.close()
-
-f = open(os.path.join(os.path.dirname(__file__), 'ZtjMySQL.py'), encoding='utf8')
-version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
-f.close()
+here = pathlib.Path(__file__).parent.resolve()
+readme = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='py-ztj-mysql',
-    version=version,
+    version='2.0.0',
     description='python mysql instance package',
     long_description=readme,
     long_description_content_type='text/markdown',
